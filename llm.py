@@ -70,7 +70,7 @@ class LLMclient:
         return result['choices'][0]['message']['content']
 
     def load_history(self, user_id) -> list:
-        path_to_file = f'history/history_{user_id}.json'
+        path_to_file = f'history/{user_id}.json'
         if os.path.exists(path_to_file):
             try:
                 with open(path_to_file, 'r', encoding='utf-8') as f:
@@ -85,7 +85,7 @@ class LLMclient:
         path_to_file = f'history/{user_id}.json'
         try:
             with open(path_to_file, 'w', encoding='utf-8') as f:
-                # print("save hist:",chat_history[-self.history_length:])
+                print("save hist:",chat_history)
                 json.dump(chat_history[-self.history_length:], f, ensure_ascii=False, indent=2)
         except Exception as e:
             print(f"Ошибка сохранения истории: {e}")
@@ -93,13 +93,18 @@ class LLMclient:
     def generate(self, message, user_id):
         try:
             chat_history = self.load_history(user_id=user_id)
+            print("loaded:", chat_history)
             chat_history.append({"role": "user", "content": message})
+            print("loaded_1:", chat_history)
+
 
             messages_for_api = [{"role": "system", "content": self.system_prompt}]
             messages_for_api.extend(chat_history)
             response = self.send_request(messages_for_api)
 
             chat_history.append({"role": "assistant", "content": response})
+            print("loaded_2:", chat_history)
+
 
             self.save_history(user_id, chat_history)
 
