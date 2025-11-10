@@ -2,7 +2,7 @@ import aiomax
 import logging
 import urllib3
 import json
-from agent_dobro import *
+from llm import *
 
 with open('cfg.json', 'r') as f:
     data = json.load(f)
@@ -17,12 +17,8 @@ async def info(pd: aiomax.BotStartPayload):
 @bot.on_message()
 async def echo(message: aiomax.Message):
     print("----------------")
-    print(message.sender.user_id)
-    print(message.sender.first_name)
-    print(message.sender.last_name)
-    print(message.sender.description)
+    print(message.sender.user_id, message.sender.first_name, message.sender.last_name)
     print(message.content)
-    print()
 
     msg = await message.send("Генерирую ответ...")
     resp = agent.generate(message.content, message.sender.user_id)
@@ -32,9 +28,9 @@ async def echo(message: aiomax.Message):
     await message.reply(resp)
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-with open('prompts/system_prompt.txt', 'r', encoding='utf-8') as f:
-    system_prompt = f.read()
 
-agent = LLMclient(system_prompt=system_prompt) 
+agent = LLMclient()
+agent.set_config("cfg.json")
+agent.get_giga_auth()
 logging.basicConfig(level=logging.INFO)
 bot.run()
