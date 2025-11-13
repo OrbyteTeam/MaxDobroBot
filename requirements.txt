@@ -37,6 +37,7 @@ numpy==1.26.4
 orjson==3.11.4
 ormsgpack==1.12.0
 packaging==24.2
+pillow==12.0.0
 propcache==0.4.1
 pydantic==2.12.4
 pydantic-settings==2.12.0
