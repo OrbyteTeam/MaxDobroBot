@@ -206,8 +206,13 @@ async def on_message(message: aiomax.Message, cursor: fsm.FSMCursor):
         await msg.delete()
     except Exception:
         pass
-
-    await message.reply(final_text)
+    
+    if final_text == "https://dobro.mail.ru":
+        kb = aiomax.buttons.KeyboardBuilder()
+        kb.add(aiomax.buttons.LinkButton("VK Добро", "https://dobro.mail.ru"))
+        message.reply("Вам 100% подойдет сервис VK Добро! Творим Добро по-доброму)))", keyboard=kb)
+    else:
+        await message.reply(final_text)
 
 
 # ===== ЗАПУСК =====
