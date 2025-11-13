@@ -22,6 +22,8 @@ from fsm_file_storage import FSMFileStorage
 from agent import *
 from langchain_core.messages import HumanMessage
 
+from vision import *
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
@@ -31,6 +33,8 @@ logging.basicConfig(
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 faulthandler.enable()
+
+vision_llm = ClassifierLlm()
 
 def _invoke_sync(agent_obj: Agent, text: str, config: dict):
     t0 = time.perf_counter()
@@ -128,25 +132,30 @@ async def on_message(message: aiomax.Message, cursor: fsm.FSMCursor):
 
     if message.body.attachments:
         try:
+            
             for doc in message.body.attachments:
+                current_data = cursor.get_data() or {}
+                uploaded_files = current_data.get("uploaded_files", [])
+                score = current_data.get("score", 0)
                 print(type(doc))
                 if type(doc) != aiomax.types.FileAttachment and type(doc) != aiomax.types.PhotoAttachment:
                     await message.reply("❌ Не удалось сохранить файл. Допустимы только фото и файлы.", attachments=doc)
                     continue
+                
                 file_url = doc.url
-                # Получаем текущие данные пользователя
-                current_data = cursor.get_data() or {}
-                uploaded_files = current_data.get("uploaded_files", [])
-                score = current_data.get("score", 0)
+                msg_first = await message.send("Обрабатываю ваш запрос...", attachments=doc)
+                info = vision_llm.check_doc(file_url=file_url)
+                await msg_first.delete()
+                print(info["classification"])
+                
+                if info["classification"]['is_volunteer_proof'] == True:
+                    uploaded_files.append(file_url)
+                    score += info["classification"]["hours"]
+                    cursor.change_data({"uploaded_files": uploaded_files,"score": score})
+                    await message.reply(f"✅ Документ успешно сохранён в вашем профиле!\nНачислено волонтерских часов: {info["classification"]["hours"]}\nТеперь у вас всего часов: {score}", attachments=doc)
+                else:
+                    await message.reply(f"❌ Документ не прошел проверку!\nПричина: {' '.join(info["classification"]["reasons"])}\nВолонтерских часов: {score}", attachments=doc)
 
-
-                # Добавляем новый URL
-                uploaded_files.append(file_url)
-                score += 1
-                cursor.change_data({"uploaded_files": uploaded_files})
-                cursor.change_data({"score": score})
-
-                await message.reply(f"✅ Файл успешно сохранён в вашем профиле! Ваши очки теперь: {score}", attachments=doc)
         except Exception as e:
             logging.exception("Ошибка при обработке вложения")
             await message.reply("❌ Не удалось сохранить файл.")
