@@ -43,6 +43,14 @@ class ClassifierLlm:
             profanity_check=False,
         )
 
+        self._classifier = GigaChat(
+            credentials=API_KEY,
+            scope="GIGACHAT_API_CORP" if is_corp else "GIGACHAT_API_PERS",
+            model=data["GigaChat_model"],
+            verify_ssl_certs=verify_ssl_certs,
+            profanity_check=False,
+        )
+
     def check_doc(self, file_url: str, *, prompt_path: str = "prompts/system_prompt_classifier") -> dict:
         """
         Сначала формируе текстовое описание, потом по текстовому описанию возвращает вердикт.
@@ -51,7 +59,7 @@ class ClassifierLlm:
 
         system_prompt = self._load_classifier_prompt(prompt_path)
 
-        result = self._client.chat({
+        result = self._classifier.chat({
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"ОПИСАНИЕ_ИЗОБРАЖЕНИЯ:\n{description}"}
@@ -146,15 +154,8 @@ class ClassifierLlm:
         return out, "upload.png"
 
     def _build_prompt(self):
-        return (
-            "Мaксимально подробно, нейтрально и без домыслов опиши, что изображено на фотографии. "
-            "Структура ответа:\n"
-            "1) Краткое резюме (1 предложение);\n"
-            "2) Детали: объекты, люди, позы, действия, цвета, стиль, фон, время суток;\n"
-            "3) Текст/надписи, если читается (цитируй точно или укажи, что неразборчиво);\n"
-            "4) Возможный контекст/назначение, если это очевидно.\n"
-            "Если что-то не видно или сомнительно — явно укажи неопределённость."
-        )
+        with open("prompts/system_prompt_describer.txt", "r", encoding="utf-8") as f:
+            return f.read()
 
     def _guess_filename(self, url, content_type=None):
         basename = os.path.basename(url.split("?")[0]).strip("/ ")
@@ -194,5 +195,5 @@ class ClassifierLlm:
 
 if __name__=="__main__":
     clf = ClassifierLlm()
-    res = clf.check_doc("https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8m6BcjQNPSCYXzWEWkTwfDdfamHaZdE6b7s-EmHsI5Ew")
+    res = clf.check_doc("https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8PGAG26TyzPoCU7G2YRGRdtfamHaZdE6b7s-EmHsI5Ew")
     print(res)

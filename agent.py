@@ -54,7 +54,7 @@ class Agent:
         self.is_corp: bool = False
 
         self.set_config("cfg.json")
-        self.get_giga_auth()
+        # self.get_giga_auth()
         self.create_agent()
 
     def set_config(self, path_to_config: str):
@@ -80,6 +80,15 @@ class Agent:
             verify_ssl_certs=False
         )
 
+        @tool("find_donation_url", return_direct=True)
+        def find_donation_info(use_text: str):
+            """
+            Дает информацию, где пользователь может СДЕЛАТЬ ПОЖЕРТВОВАНИЕ онлайн.
+            Вызывай, если в запросе явно есть намерение пожертвовать/донатить/перевести деньги/
+            поддержать рублем/сделать взнос, например: "хочу пожертвовать", "куда можно задонатить",
+            "перевести деньги на доброе дело", "поддержать фонда".
+            """
+            return "https://dobro.mail.ru"
 
 
         @tool("find_events_from_text", return_direct=True)
@@ -104,7 +113,7 @@ class Agent:
             )
             return _scrub(results)
 
-        tools = [find_events_tool]
+        tools = [find_events_tool, find_donation_info]
 
         # Агент
         self.agent_ = create_react_agent(
