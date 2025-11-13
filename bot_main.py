@@ -7,6 +7,17 @@ import sys
 import time
 import urllib3
 import faulthandler
+from aiomax import fsm
+# from aiomax.fsm import FSMStorage
+# from aiomax import WebAppInfo
+
+from fsm_file_storage import FSMFileStorage
+
+# Создаём постоянное хранилище
+
+
+# Передаём его в бота
+
 
 from agent import *
 from langchain_core.messages import HumanMessage
@@ -62,9 +73,14 @@ with open("cfg.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 TOKEN = data["Token_MAX"]
 
+# bot = aiomax.Bot(TOKEN, default_format="markdown")
 bot = aiomax.Bot(TOKEN, default_format="markdown")
+fsm_storage = FSMFileStorage("fsm_data.json")
+bot.storage = fsm_storage
 
 agent = Agent()
+
+
 
 
 @bot.on_bot_start()
@@ -85,10 +101,71 @@ async def on_start(pd: aiomax.BotStartPayload):
     )
 
 
+# @bot.on_message(aiomax.filters.equals("/files"))
+# async def show_files(message: aiomax.Message, cursor: fsm.FSMCursor):
+
+
 @bot.on_message()
-async def on_message(message: aiomax.Message):
+async def on_message(message: aiomax.Message, cursor: fsm.FSMCursor):
     user_id = str(message.sender.user_id)
     text = message.content or ""
+
+    if message.content == "/files":
+        data = cursor.get_data() or {}
+        files = data.get("uploaded_files", [])
+        if not files:
+            await message.reply("У вас пока нет загруженных файлов.")
+        else:
+            lines = [f"{i+1}. {url}" for i, url in enumerate(files)]
+            await message.reply("Ваши файлы:\n" + "\n".join(lines))
+        return
+
+    if message.content == "/score":
+        data = cursor.get_data() or {}
+        score = data.get("score", 0)
+        await message.reply(f"Ваше количество очков: {score}")
+        return
+
+    if message.body.attachments:
+        try:
+            for doc in message.body.attachments:
+                print(type(doc))
+                if type(doc) != aiomax.types.FileAttachment and type(doc) != aiomax.types.PhotoAttachment:
+                    await message.reply("❌ Не удалось сохранить файл. Допустимы только фото и файлы.", attachments=doc)
+                    continue
+                file_url = doc.url
+                # Получаем текущие данные пользователя
+                current_data = cursor.get_data() or {}
+                uploaded_files = current_data.get("uploaded_files", [])
+                score = current_data.get("score", 0)
+
+
+                # Добавляем новый URL
+                uploaded_files.append(file_url)
+                score += 1
+                cursor.change_data({"uploaded_files": uploaded_files})
+                cursor.change_data({"score": score})
+
+                await message.reply(f"✅ Файл успешно сохранён в вашем профиле! Ваши очки теперь: {score}", attachments=doc)
+        except Exception as e:
+            logging.exception("Ошибка при обработке вложения")
+            await message.reply("❌ Не удалось сохранить файл.")
+        return
+
+
+    if text.strip() == "/upload":
+        upload_url = f"http://192.168.1.137:8080/?user_id={user_id}"
+        kb = aiomax.buttons.KeyboardBuilder()
+        kb.add(aiomax.buttons.LinkButton("Открыть ссылку мини-апп", upload_url))
+        kb.add(aiomax.buttons.WebAppButton("Открыть мини-апп", "t268_hakaton_bot"))
+
+        await message.send(
+            f"Загрузите файл через mini-app", keyboard=kb
+         
+        )
+        return
+        
+
 
     print("----------------")
     print(message.sender.user_id, message.sender.first_name, message.sender.last_name)
