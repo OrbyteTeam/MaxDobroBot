@@ -12,8 +12,15 @@ RUN apt-get update \
         libgconf-2-4 \
         libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
 COPY requirements.txt ./
+COPY data/events.json ./
+COPY cfg_parser.json ./
+COPY cfg.json ./
+COPY fsm_data.json ./
+
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 COPY . .

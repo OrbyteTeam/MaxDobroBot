@@ -17,10 +17,6 @@ docker build -t maxdobrobot:latest .
 ### Запуск контейнера
 ```bash
 docker run --rm -it \
-  -v $(pwd)/cfg.json:/app/cfg.json:ro \
-  -v $(pwd)/cfg_parser.json:/app/cfg_parser.json:ro \
-  -v $(pwd)/fsm_data.json:/app/fsm_data.json \
-  -v $(pwd)/data:/app/data:ro \
   --name maxdobrobot \
   maxdobrobot:latest
 ```
