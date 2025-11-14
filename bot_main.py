@@ -77,7 +77,6 @@ with open("cfg.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 TOKEN = data["Token_MAX"]
 
-# bot = aiomax.Bot(TOKEN, default_format="markdown")
 bot = aiomax.Bot(TOKEN, default_format="markdown")
 fsm_storage = FSMFileStorage("fsm_data.json")
 bot.storage = fsm_storage
@@ -94,19 +93,24 @@ async def on_start(pd: aiomax.BotStartPayload):
         logging.info(f"Logged in as @{getattr(me, 'username', 'unknown')}")
     except Exception:
         logging.exception("bot.get_me() failed")
-
+    kb = aiomax.buttons.KeyboardBuilder()
+    kb.add(aiomax.buttons.LinkButton("Бона", "https://orbyteteam.github.io/MaxDobroBot/"))
+    doc = aiomax.PhotoAttachment(token="sqGTeRV14KQuM6+bOFPy5imUFlCMQSn3SOtmVLPUH2NJrjQATL5s543vt0ATx4fzV+zyaeNg9TA0izvwSne/irZfcCHl5ssH")
+    await pd.send("Привет! Меня зовут Бона 😊.\nЯ твой персональный помощник в мире волонтерства.\n", attachments=doc, keyboard=kb)
     await pd.send(
-        "Привет! 😊 Я твой помощник в мире волонтерства.\n"
         "Могу:\n"
-        "🔍 Найти интересные события\n"
-        "🗓️ Подобрать по дате и времени\n"
-        "🏙️ Показать варианты в твоём городе\n"
+        "🔍 Найти события, подходящие именно тебе\n"
+        "🗓 Составить план по дате и времени\n"
+        "🏙 Показать варианты в твоём городе\n"
+        "Подсказать как помочь другим своим пожертвованием"
         "Напиши, например: «завтра в Москве после 15:00»."
-    )
+        )
+    await pd.send(
+        "Или просто отправь мне картинкой/документом своё доброе достижение и я засчитаю тебе волонтёрские часы\n"
+        "Команда /files позволит просмотреть загруженные достижения\n"
+        "Команда /score - узнать своё количество волонтерских часов"
+        )
 
-
-# @bot.on_message(aiomax.filters.equals("/files"))
-# async def show_files(message: aiomax.Message, cursor: fsm.FSMCursor):
 
 
 @bot.on_message()

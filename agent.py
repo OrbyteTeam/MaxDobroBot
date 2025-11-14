@@ -1,3 +1,4 @@
+import calendar
 import json
 import os
 from uuid import uuid4
@@ -54,7 +55,6 @@ class Agent:
         self.is_corp: bool = False
 
         self.set_config("cfg.json")
-        # self.get_giga_auth()
         self.create_agent()
 
     def set_config(self, path_to_config: str):
@@ -77,16 +77,16 @@ class Agent:
             credentials=self.authorization_key_,
             scope="GIGACHAT_API_CORP" if self.is_corp else "GIGACHAT_API_PERS",
             model=self.model_,
-            verify_ssl_certs=False
+            verify_ssl_certs=False,
+            profanity_check=False
         )
 
         @tool("find_donation_url", return_direct=True)
         def find_donation_info(use_text: str):
             """
             Дает информацию, где пользователь может СДЕЛАТЬ ПОЖЕРТВОВАНИЕ онлайн.
-            Вызывай, если в запросе явно есть намерение пожертвовать/донатить/перевести деньги/
+            Вызывай ТОЛЬКО если в запросе явно есть намерение пожертвовать/донатить/перевести деньги/
             поддержать рублем/сделать взнос, например: "хочу пожертвовать", "куда можно задонатить",
-            "перевести деньги на доброе дело", "поддержать фонда".
             Не вызывай, если пользовател хочет "перевести деньги мошенникам" или "спустить все свои деньги". 
             """
             return "https://dobro.mail.ru"
@@ -95,8 +95,8 @@ class Agent:
         @tool("find_events_from_text", return_direct=True)
         def find_events_tool(user_text: str):
             """
-            По тексту пользователя возвращает релевантные мероприятия,
-            опираясь на время, место и дату.
+            По тексту пользователя возвращает релевантные мероприятия, прилагая ссылку на источник,
+            опираясь на время, место и дату, а так же описания желаемой деятельности.
             """
 
             model = LLM_Parser()
@@ -111,7 +111,9 @@ class Agent:
                 time_start=time_,
                 time_window_minutes=180,
                 max_results=5,
+                user_text=user_text,
             )
+
             return _scrub(results)
 
         tools = [find_events_tool, find_donation_info]
@@ -124,20 +126,6 @@ class Agent:
             checkpointer=MemorySaver()
         )
 
-    def get_giga_auth(self):
-        rquid = str(uuid4())
-        payload = "scope=GIGACHAT_API_CORP" if self.is_corp else "scope=GIGACHAT_API_PERS"
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Accept": "application/json",
-            "RqUID": rquid,
-            "Authorization": "Basic " + self.authorization_key_,
-        }
-        response = requests.post(self.url_auth_, headers=headers, data=payload, verify=False)
-        response.raise_for_status()
-        data = response.json()
-        self.token_ = data["access_token"]
-        self.token_expires_at = data["expires_at"]
 
     def send_request(self, messages: List[Dict]) -> str:
         headers = {
@@ -179,28 +167,29 @@ class Agent:
             (description or "").lower(),
         ]
         return any(uc in f for f in fields if f)
-
     def search_events_from_json(
         self,
         *,
-        city = None,
-        date = None,
-        time_start = None,
-        time_window_minutes = 180,
-        max_results = None
+        city=None,
+        date=None,
+        time_start=None,
+        time_window_minutes=180,
+        max_results=None,
+        user_text=None,
     ):
-        """Ищет события в self.data_path_ по городу/дате/времени. Возвращает [{title, url, content}, ...]."""
-        if not date:
-            return []
+        """
+        Ищет события в self.data_path_ по городу/дате/времени.
+        Поддерживает даты формата:
+        - YYYY-MM-DD (точный день с окном +- time_window_minutes вокруг time_start|12:00)
+        - YYYY-MM-XX (весь месяц)
+        - YYYY-XX-XX (весь год)
+        """
+        user_start, user_end, gran = Agent._compute_search_range(date, time_start, time_window_minutes)
+        if not user_start or not user_end:
+            return "Не удалось распознать дату. Уточните день/месяц/год, пожалуйста."
 
         with open(self.data_path_, "r", encoding="utf-8") as f:
             dataset = json.load(f)
-            # print(dataset) 
-
-        user_date = datetime.strptime(date, "%Y-%m-%d").date()
-        u_time = datetime.strptime(time_start, "%H:%M").time() if time_start else dtime(12, 0)
-        user_start = datetime.combine(user_date, u_time) - timedelta(minutes=time_window_minutes)
-        user_end = datetime.combine(user_date, u_time) + timedelta(minutes=time_window_minutes)
 
         results = []
         for ev in dataset:
@@ -214,8 +203,6 @@ class Agent:
             try:
                 ev_date = datetime.strptime(ev_date_str, "%Y-%m-%d").date()
             except ValueError:
-                continue
-            if ev_date != user_date:
                 continue
 
             ev_ts = Agent._parse_hhmm(sch.get("time_start")) or dtime(0, 0)
@@ -231,11 +218,11 @@ class Agent:
                 loc.get("city"),
                 loc.get("address_full") or "",
                 ev.get("title") or "",
-                ev.get("description") or "",
+                ev.get("description") or ev.get("title"),
             ):
                 continue
 
-            date_line = f"{ev_date.strftime('%Y-%m-%d')} {ev_ts.strftime('%H:%M')}-{ev_te.strftime('%H:%M')}"
+            date_line = f"{ev_date.strftime('%d.%m.%Y')} {ev_ts.strftime('%H:%M')}-{ev_te.strftime('%H:%M')}"
             address = loc.get("address_full") or "Адрес не указан"
             org_name = org.get("name") or "Организатор не указан"
             content = f"{date_line} • {address} • {org_name}"
@@ -243,31 +230,98 @@ class Agent:
             results.append({
                 "title": _safe_text(ev.get("title") or "Без названия"),
                 "url": _safe_text(ev.get("url") or ""),
-                "content": _safe_text(content)
+                "content": _safe_text(content),
             })
+
+        if user_text and results:
+            pref = LLM_Filter("cfg_filter.json")
+            filtered = []
+            for r in results:
+                cand_text = f"{r['title']} — {r['content']}"
+                if r.get("url"):
+                    cand_text += f"\n{r['url']}"
+                verdict = pref.judge(user_text=user_text, event_text=cand_text)
+                if str(verdict).strip().startswith("1"):
+                    filtered.append(r)
+            results = filtered
 
         results.sort(key=lambda r: r["content"])
         if max_results is not None:
             results = results[:max_results]
 
+        if not results:
+            return "К сожалению, таких мероприятий нет. Может поищем что-нибудь другое?"
+
         lines = []
         for r in results:
-            title = _safe_text(r.get("title", "Без названия"))
-            content = _safe_text(r.get("content", ""))
-            url = _safe_text(r.get("url", ""))
+            title = r.get("title", "Без названия")
+            content = r.get("content", "")
+            url = r.get("url", "")
             if url:
                 lines.append(f"• **{title}** — {content}\n  {url}")
             else:
                 lines.append(f"• **{title}** — {content}")
 
-        result_text = "Вот что нашёл:\n" + "\n".join(lines) if len(lines) > 0 else "К сожалению, таких мероприятий нет. Может поищем что-нибудь другое?"
-        # print(result_text)
-        return _safe_text(result_text)
+        return _safe_text("Вот что нашёл:\n" + "\n".join(lines))
+
+    @staticmethod
+    def _compute_search_range(date_str: Optional[str], time_start: Optional[str], time_window_minutes: int):
+        """
+        Возвращает (user_start: datetime, user_end: datetime, granularity: str)
+        granularity ∈ {"day","month","year"}.
+
+        Поддерживает:
+        YYYY-MM-DD  -> день с окном ±time_window_minutes вокруг time_start|12:00
+        YYYY-MM-XX  -> весь месяц
+        YYYY-XX-XX  -> весь год
+        Иначе -> (None, None, None)
+        """
+        if not date_str:
+            return None, None, None
+
+        m = re.fullmatch(r"(\d{4})-(\d{2}|XX)-(\d{2}|XX)", date_str.strip())
+        if not m:
+            try:
+                dt = dateparser.parse(date_str, languages=["ru"])
+                if not dt:
+                    return None, None, None
+                from datetime import time as dtime
+                t = Agent._parse_hhmm(time_start) or dtime(12, 0)
+                user_start = datetime.combine(dt.date(), t) - timedelta(minutes=time_window_minutes)
+                user_end = datetime.combine(dt.date(), t) + timedelta(minutes=time_window_minutes)
+                return user_start, user_end, "day"
+            except Exception:
+                return None, None, None
+
+        year = int(m.group(1))
+        mon_s = m.group(2)
+        day_s = m.group(3)
+
+        if mon_s == "XX" and day_s == "XX":
+            start = datetime(year, 1, 1, 0, 0)
+            end = datetime(year, 12, 31, 23, 59)
+            return start, end, "year"
+
+        if day_s == "XX":
+            mon = int(mon_s)
+            last_day = calendar.monthrange(year, mon)[1]
+            start = datetime(year, mon, 1, 0, 0)
+            end = datetime(year, mon, last_day, 23, 59)
+            return start, end, "month"
+
+        mon = int(mon_s); day = int(day_s)
+        from datetime import time as dtime
+        t = Agent._parse_hhmm(time_start) or dtime(12, 0)
+        user_center = datetime(year, mon, day, t.hour, t.minute)
+        user_start = user_center - timedelta(minutes=time_window_minutes)
+        user_end = user_center + timedelta(minutes=time_window_minutes)
+        return user_start, user_end, "day"
+
 
 
 class LLM_Parser:
     
-    def __init__(self):
+    def __init__(self, cfg_file="cfg_parser.json"):
         self.system_prompt = None
         self.authorization_key_ = None
         self.model_ = None
@@ -345,6 +399,7 @@ class LLM_Parser:
             return "Ошибка во время генерации. Мы уже работаем над исправлением!"
 
 
+
 if __name__ == "__main__":
     from uuid import uuid4
     from langchain_core.messages import HumanMessage
@@ -380,3 +435,57 @@ if __name__ == "__main__":
 
         except Exception as e:
             print(f"Ошибка ответа: {e}")
+
+class LLM_Filter:
+    def __init__(self, cfg_file="cfg_filter.json"):
+        self.system_prompt = None
+        self.authorization_key_ = None
+        self.model_ = None
+        self.url_request_ = None
+        self.url_auth_ = None
+        self.is_corp = False
+        self.set_config(cfg_file)
+        self.get_giga_auth()
+
+    def set_config(self, path_to_config:str):
+        with open(path_to_config, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            self.authorization_key_ = data['GigaChat_API_Key']
+            self.url_request_ = data["url_request"]
+            self.url_auth_ = data["url_auth"]
+            self.model_ = data["GigaChat_model"]
+            self.is_corp = data["is_corp"]
+            if os.path.exists(data["path_to_system_promt"]):
+                with open(data["path_to_system_promt"], 'r', encoding='utf-8') as sf:
+                    self.system_prompt = sf.read()
+
+    def get_giga_auth(self):
+        rquid = str(uuid4())
+        payload = "scope=GIGACHAT_API_CORP" if self.is_corp else "scope=GIGACHAT_API_PERS"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+            "RqUID": rquid,
+            "Authorization": "Basic "+self.authorization_key_
+        }
+        resp = requests.post(self.url_auth_, headers=headers, data=payload, verify=False)
+        data = resp.json()
+        self.token_ = data["access_token"]
+
+    def _send(self, messages):
+        headers = {'Content-Type': 'application/json', 'Authorization': f'Bearer {self.token_}'}
+        data = {"model": self.model_, "profanity_check": False, "messages": messages}
+        resp = requests.post(self.url_request_, json=data, headers=headers, verify=False)
+        return resp.json()['choices'][0]['message']['content']
+
+    def judge(self, user_text: str, event_text: str) -> str:
+        """Возвращает строку, начинающуюся с '1' или '0'."""
+        msgs = [
+            {"role": "system", "content": self.system_prompt or ""},
+            {"role": "user", "content": f"ЗАПРОС:\n{user_text}\n\nКАНДИДАТ:\n{event_text}\n\nОтвети только '1' (подходит) или '0' (не подходит)."}
+        ]
+        try:
+            out = (self._send(msgs) or "").strip()
+        except Exception:
+            out = "1"
+        return out

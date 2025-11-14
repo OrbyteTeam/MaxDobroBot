@@ -1,5 +1,5 @@
 {
-    "GigaChat_API_Key": "",
+    "GigaChat_API_Key":  "",
     "url_auth": "https://ngw.devices.sberbank.ru:9443/api/v2/oauth",
     "url_request": "https://gigachat.devices.sberbank.ru/api/v1/chat/completions",
     "GigaChat_model": "GigaChat-2",
