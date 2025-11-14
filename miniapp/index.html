@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>DobroBot Popit — подберём волонтёрство под тебя</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+        content="DobroBot Popit помогает подобрать удобные волонтёрские мероприятия и места для пожертвований, а на этом сайте можно пройти тест и узнать, какой тип волонтёрства подходит именно вам." />
+
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --bg-card: #ffffff;
+      --accent: #5a48ff;  
+      --accent-soft: #e3ddff;
+      --vk-blue: #0077ff;
+      --text-main: #271b15;
+      --text-soft: #6b5c52;
+      --border-soft: #eadfce;
+      --danger: #d64545;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --shadow-soft: 0 18px 40px rgba(36, 25, 15, 0.12);
+      --shadow-chip: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "VK Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #fdf9f3 0, #f7f1e8 45%, #f3ebdf 100%);
+      color: var(--text-main);
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: var(--vk-blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 80px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .vk-edu {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vk-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--vk-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .vk-edu-text {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: lowercase;
+      font-size: 20px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+    }
+
+    .nav a {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow-chip);
+      color: var(--text-soft);
+    }
+
+    .nav a:hover {
+      background: #fff;
+      text-decoration: none;
+    }
+
+    /* HERO */
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .hero-title {
+      font-size: clamp(30px, 5vw, 40px);
+      line-height: 1.1;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-soft);
+      margin-bottom: 20px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-chip);
+      font-size: 12px;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 46px rgba(32, 20, 12, 0.18);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-note {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .hero-mascot-card {
+      border-radius: var(--radius-lg);
+      background: #fdf7ed;
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .hero-mascot-img {
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .hero-mascot-caption {
+      font-size: 13px;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    /* SECTION GENERIC */
+
+    section {
+      margin-bottom: 56px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--text-soft);
+      margin-bottom: 24px;
+      max-width: 640px;
+    }
+
+    .card-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .card-text {
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* CATEGORIES LIST */
+
+    .categories-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-chip);
+      border: 1px solid rgba(240, 233, 221, 0.9);
+      color: var(--text-soft);
+    }
+
+    .cat-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      border-radius: 999px;
+      background: #eef1f7;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      overflow: hidden;
+    }
+
+    .cat-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* QUIZ */
+
+    .quiz-wrapper {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 20px 18px 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 800px) {
+      .quiz-wrapper {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .quiz-progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .quiz-progress-bar {
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      background: #f0e6d6;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--vk-blue));
+      transition: width 0.25s ease;
+    }
+
+    .quiz-question-text {
+      font-size: 17px;
+      margin-bottom: 10px;
+    }
+
+    .quiz-question-note {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-option {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 9px 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: #fdf9f3;
+      font-size: 14px;
+    }
+
+    .quiz-option input {
+      accent-color: var(--accent);
+    }
+
+    .quiz-option.selected {
+      border-color: var(--accent);
+      background: #f6f2ff;
+    }
+
+    .quiz-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .quiz-error {
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 6px;
+      min-height: 18px;
+    }
+
+    .quiz-meta {
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .quiz-meta ul {
+      padding-left: 18px;
+      margin: 6px 0;
+    }
+
+    /* RESULTS */
+
+    .results-card {
+      margin-top: 16px;
+      padding: 16px 14px;
+      border-radius: var(--radius-md);
+      background: #f6f2ff;
+      border: 1px solid #ddd1ff;
+    }
+
+    .results-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .results-cats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+
+    .results-cat-pill {
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(221, 209, 255, 0.9);
+    }
+
+    .results-links {
+      font-size: 13px;
+    }
+
+    /* CONTACTS */
+
+    .contacts-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 18px 16px;
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+
+    footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 720px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="vk-edu">
+      <div class="vk-logo">VK</div>
+      <div class="vk-edu-text">education</div>
+    </div>
+    <nav class="nav">
+      <a href="#about">О боте</a>
+      <a href="#matching">Подбор мероприятий</a>
+      <a href="#quiz">Тест</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+
+  <section class="hero">
+    <div>
+      <h1 class="hero-title">DobroBot Popit</h1>
+      <p class="hero-subtitle">
+        Добрый кролик Попит помогает подобрать волонтёрские мероприятия и места для пожертвований,
+        а ещё — пройти тест и понять, какой тип волонтёрства подойдёт именно вам.
+      </p>
+
+      <div class="hero-badges">
+        <span class="badge"><span class="badge-dot"></span> подбор мероприятий в Max</span>
+        <span class="badge"><span class="badge-dot"></span> места для пожертвований</span>
+        <span class="badge"><span class="badge-dot"></span> персональный волонтёрский профиль</span>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="scrollToQuizBtn">
+          Пройти тест
+        </button>
+        <a class="btn btn-ghost"
+           href="https://max.ru/80104306"
+           target="_blank" rel="noopener">
+          Открыть бота в Max
+        </a>
+      </div>
+      <p class="hero-note">
+        Подборки мероприятий и мест для пожертвований живут внутри бота. Сайт — это точка входа и
+        тест, который помогает сделать первый шаг.
+      </p>
+    </div>
+
+    <aside class="hero-mascot-card" aria-label="Маскот ДоброБота Попита">
+      <div class="hero-mascot-img">
+        <img src="mascot.png" alt="Кролик ДоброBot Popit с коробкой для пожертвований" />
+      </div>
+      <div class="hero-mascot-caption">
+        Попит знает, что начинать волонтёрить немного страшно. Поэтому он аккуратно подбирает
+        форматы, где будет комфортно именно вам.
+      </div>
+    </aside>
+  </section>
+
+  <!-- ABOUT BOT -->
+
+  <section id="about">
+    <h2 class="section-title">Что умеет DobroBot Popit</h2>
+    <p class="section-subtitle">
+      Бот живёт в мессенджере Max и собирает волонтёрские возможности из разных источников. Он
+      не заменяет официальные сервисы, а помогает в них сориентироваться.
+    </p>
+
+    <div class="card-row">
+      <article class="card">
+        <div class="card-title">Подбирает удобные мероприятия</div>
+        <p class="card-text">
+          Фильтруем волонтёрские события по городу, времени, формату участия и типу задач —
+          от офлайн акций до удалённой помощи.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="card-title">Подсказывает, куда жертвовать</div>
+        <p class="card-text">
+          Показываем проверенные площадки и фонды, даём подсказки, на что обратить внимание:
+          прозрачность отчётности, цели программ, формат помощи.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="card-title">Сопровождает новичков</div>
+        <p class="card-text">
+          Объясняем простыми словами, как устроено волонтёрство, чего ожидать от первой акции
+          и как не перегореть.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- MATCHING -->
+
+  <section id="matching">
+    <h2 class="section-title">Подбор волонтёрства по темам</h2>
+    <p class="section-subtitle">
+      В боте Попит ориентируется на те же направления, что и крупные волонтёрские платформы. После
+      прохождения теста он подскажет, с какими сферами вам, скорее всего, будет комфортнее всего работать.
+    </p>
+
+    <div class="card-row" style="margin-bottom: 18px;">
+      <article class="card">
+        <div class="step-badge">1</div>
+        <div class="card-title">Вы проходите короткий тест</div>
+        <p class="card-text">
+          Отвечаете на вопросы о том, как вы любите помогать, сколько у вас времени и в каких
+          ситуациях вы чувствуете себя уверенно.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="step-badge">2</div>
+        <div class="card-title">Получаете свои направления</div>
+        <p class="card-text">
+          Сайт показывает несколько сфер, которые подходят вам больше всего, и объясняет почему.
+        </p>
+      </article>
+
+      <article class="card">
+        <div class="step-badge">3</div>
+        <div class="card-title">Продолжаете в боте</div>
+        <p class="card-text">
+          В боте эти направления превращаются в подборку конкретных мероприятий и мест для пожертвований.
+        </p>
+      </article>
+    </div>
+
+    <div class="categories-grid">
+      <!-- TODO: подставить SVG-иконки -->
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/health.svg" alt=""></span>
+        Здравоохранение и ЗОЖ
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/emergency.svg" alt=""></span>
+        ЧС
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/veterans.svg" alt=""></span>
+        Ветераны и историческая память
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/children.svg" alt=""></span>
+        Дети и молодёжь
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/sport.svg" alt=""></span>
+        Спорт и события
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/animals.svg" alt=""></span>
+        Животные
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/elderly.svg" alt=""></span>
+        Старшее поколение
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/disability.svg" alt=""></span>
+        Люди с ОВЗ
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/ecology.svg" alt=""></span>
+        Экология
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/culture.svg" alt=""></span>
+        Культура и искусство
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/missing.svg" alt=""></span>
+        Поиск пропавших
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/urban.svg" alt=""></span>
+        Урбанистика
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/intellectual.svg" alt=""></span>
+        Интеллектуальная помощь
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/human-rights.svg" alt=""></span>
+        Права человека
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/education.svg" alt=""></span>
+        Образование
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/other.svg" alt=""></span>
+        Другое
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/covid.svg" alt=""></span>
+        Коронавирус
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/science.svg" alt=""></span>
+        Наука
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/mentoring.svg" alt=""></span>
+        Наставничество
+      </span>
+      <span class="cat-chip">
+        <span class="cat-icon"><img src="img/categories/svo.svg" alt=""></span>
+        СВО
+      </span>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+
+  <section id="quiz">
+    <h2 class="section-title">Тест: какой тип волонтёрства вам подходит</h2>
+    <p class="section-subtitle">
+      Тест не ставит диагноз и не ограничивает вас одним направлением. Он помогает почувствовать,
+      где вы будете чувствовать себя увереннее, а где — понадобится больше ресурса и времени.
+    </p>
+
+    <div class="quiz-wrapper">
+      <div>
+        <div class="quiz-progress-row">
+          <span id="quizQuestionCounter">Вопрос 1 из 12</span>
+          <button class="btn btn-ghost" id="quizResetBtn" type="button" style="padding:6px 12px;font-size:12px;">
+            Начать заново
+          </button>
+        </div>
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="quizProgressFill"></div>
+        </div>
+
+        <div class="quiz-error" id="quizError"></div>
+
+        <div id="quizQuestionBlock">
+          <!-- сюда JavaScript вставит текст вопроса и варианты -->
+        </div>
+
+        <div class="quiz-nav">
+          <button class="btn btn-ghost" id="quizPrevBtn" type="button">Назад</button>
+          <button class="btn btn-primary" id="quizNextBtn" type="button">Далее</button>
+        </div>
+      </div>
+
+      <aside class="quiz-meta">
+        <strong>Как работает тест</strong>
+        <ul>
+          <li>12 вопросов, часть с одним вариантом ответа, часть — с несколькими.</li>
+          <li>Ответы связаны с направлениями волонтёрства: животные, экология, дети, образование и другие.</li>
+          <li>В конце вы увидите 3–4 направления, которые сейчас подходят вам больше всего.</li>
+        </ul>
+        <p>
+          После прохождения теста вы сможете перейти в бота в Max и посмотреть подборку мероприятий,
+          а также найти ещё больше возможностей на платформе
+          <a href="https://dobro.ru" target="_blank" rel="noopener">dobro.ru</a>.
+        </p>
+
+        <div id="quizResults" class="results-card" style="display:none;">
+          <div class="results-title">Ваши направления волонтёрства</div>
+          <div id="quizResultsCats" class="results-cats"></div>
+          <div class="results-links">
+            <p style="margin:4px 0 6px;">
+              Попробуйте начать именно с этих сфер — там у вас больше шансов почувствовать себя «в своей тарелке».
+            </p>
+            <p style="margin:4px 0;">
+              ➜ Открыть бота в Max:
+              <a href="https://max.ru/80104306" target="_blank" rel="noopener">DobroBot Popit</a>
+            </p>
+            <p style="margin:4px 0;">
+              ➜ Ещё больше мероприятий и проектов — на <a href="https://dobro.ru" target="_blank" rel="noopener">dobro.ru</a>.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+
+  <section id="contacts">
+    <h2 class="section-title">Контакты и команда</h2>
+    <p class="section-subtitle">
+      DobroBot Popit — это учебно-просветительский проект при участии VK Education. Бот и
+      мини-приложение развиваются вместе с волонтёрами и наставниками.
+    </p>
+
+    <div class="contacts-card">
+      <p>
+        Если вы хотите предложить партнёрство, поделиться обратной связью или идеями для развития
+        бота, напишите нам:
+      </p>
+      <ul>
+        <li>E-mail: <a href="mailto:Estnafinema0@gmail.com">Estnafinema0@gmail.com</a></li>
+        <li>Бот в Max: <a href="https://max.ru/80104306" target="_blank" rel="noopener">DobroBot Popit</a></li>
+      </ul>
+      <p style="margin-top:8px;">
+        Мы будем рады, если вы поделитесь этим тестом с друзьями, которым тоже хочется помогать,
+        но пока страшно или непонятно, с чего начать.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    DobroBot Popit · VK Education ·
+    <span>Сделано с заботой о тех, кто помогает другим.</span>
+  </footer>
+</div>
+
+<script>
+  // ---- Конфигурация теста ----
+
+  const VOL_CATEGORIES = [
+    "Здравоохранение и ЗОЖ",
+    "ЧС",
+    "Ветераны и историческая память",
+    "Дети и молодёжь",
+    "Спорт и события",
+    "Животные",
+    "Старшее поколение",
+    "Люди с ОВЗ",
+    "Экология",
+    "Культура и искусство",
+    "Поиск пропавших",
+    "Урбанистика",
+    "Интеллектуальная помощь",
+    "Права человека",
+    "Образование",
+    "Другое",
+    "Коронавирус",
+    "Наука",
+    "Наставничество",
+    "СВО"
+  ];
+
+  const QUIZ_QUESTIONS = [
+    {
+      id: 1,
+      type: "single",
+      text: "С кем вам психологически легче всего взаимодействовать, когда вы помогаете?",
+      note: "Выберите один вариант.",
+      options: [
+        {
+          value: "a",
+          label: "С детьми и подростками",
+          categories: ["Дети и молодёжь", "Образование", "Наставничество"]
+        },
+        {
+          value: "b",
+          label: "Со взрослыми, которым нужна интеллектуальная или юридическая помощь",
+          categories: ["Интеллектуальная помощь", "Права человека", "Наука"]
+        },
+        {
+          value: "c",
+          label: "С пожилыми людьми",
+          categories: ["Старшее поколение"]
+        },
+        {
+          value: "d",
+          label: "С животными",
+          categories: ["Животные"]
+        },
+        {
+          value: "e",
+          label: "Лучше без прямого контакта — онлайн-задачи, аналитика, организация",
+          categories: ["Интеллектуальная помощь", "Другое"]
+        }
+      ]
+    },
+    {
+      id: 2,
+      type: "multi",
+      text: "Какие форматы помощи вам откликаются больше всего?",
+      note: "Можно выбрать несколько вариантов.",
+      options: [
+        {
+          value: "a",
+          label: "Поддерживать людей эмоционально, общаться, проводить время вместе",
+          categories: ["Старшее поколение", "Дети и молодёжь", "Люди с ОВЗ"]
+        },
+        {
+          value: "b",
+          label: "Участвовать в выездных акциях, уборках, мероприятиях на улице",
+          categories: ["Экология", "Спорт и события", "Урбанистика"]
+        },
+        {
+          value: "c",
+          label: "Разбираться в документах, правах, помогать советом",
+          categories: ["Права человека", "Интеллектуальная помощь"]
+        },
+        {
+          value: "d",
+          label: "Заниматься просвещением: лекции, кружки, наставничество",
+          categories: ["Образование", "Наставничество", "Наука"]
+        },
+        {
+          value: "e",
+          label: "Участвовать в поисковых операциях и работе в кризисных ситуациях",
+          categories: ["ЧС", "Поиск пропавших"]
+        }
+      ]
+    },
+    {
+      id: 3,
+      type: "single",
+      text: "Сколько времени в среднем вы готовы тратить на волонтёрство?",
+      note: "Выберите вариант, который ближе всего к вашей реальности.",
+      options: [
+        {
+          value: "a",
+          label: "1–2 раза в месяц, короткие акции",
+          categories: ["Спорт и события", "Другое"]
+        },
+        {
+          value: "b",
+          label: "Раз в неделю по несколько часов",
+          categories: ["Дети и молодёжь", "Животные", "Экология"]
+        },
+        {
+          value: "c",
+          label: "Почти каждый день по чуть-чуть, в основном онлайн",
+          categories: ["Интеллектуальная помощь", "Образование"]
+        },
+        {
+          value: "d",
+          label: "Готов(а) к длительным регулярным проектам и наставничеству",
+          categories: ["Наставничество", "Старшее поколение", "Люди с ОВЗ"]
+        }
+      ]
+    },
+    {
+      id: 4,
+      type: "multi",
+      text: "Какие темы вам ближе всего по личным ценностям?",
+      note: "Можно выбрать несколько вариантов.",
+      options: [
+        {
+          value: "a",
+          label: "Здоровье людей, поддержка пациентов и их семей",
+          categories: ["Здравоохранение и ЗОЖ", "Коронавирус"]
+        },
+        {
+          value: "b",
+          label: "Экология, городская среда, устойчивое развитие",
+          categories: ["Экология", "Урбанистика"]
+        },
+        {
+          value: "c",
+          label: "Права человека, равные возможности, инклюзия",
+          categories: ["Права человека", "Люди с ОВЗ"]
+        },
+        {
+          value: "d",
+          label: "Культура, искусство, сохранение памяти",
+          categories: ["Культура и искусство", "Ветераны и историческая память"]
+        },
+        {
+          value: "e",
+          label: "Наука, образование и просвещение",
+          categories: ["Наука", "Образование"]
+        }
+      ]
+    },
+    {
+      id: 5,
+      type: "single",
+      text: "Как вы относитесь к физической активности во время волонтёрства?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Хочу двигаться: уборки, спортивные события, выезды — это моё",
+          categories: ["Спорт и события", "Экология"]
+        },
+        {
+          value: "b",
+          label: "Умеренная активность, но без тяжёлых нагрузок",
+          categories: ["Дети и молодёжь", "Культура и искусство"]
+        },
+        {
+          value: "c",
+          label: "Предпочитаю спокойные форматы — онлайн или кабинетную работу",
+          categories: ["Интеллектуальная помощь", "Наука"]
+        }
+      ]
+    },
+    {
+      id: 6,
+      type: "single",
+      text: "Насколько вам комфортно оказываться в эмоционально тяжёлых ситуациях?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Готов(а) к этому, если есть поддержка команды",
+          categories: ["ЧС", "Поиск пропавших", "Здравоохранение и ЗОЖ"]
+        },
+        {
+          value: "b",
+          label: "Готов(а) к средней эмоциональной нагрузке",
+          categories: ["Животные", "Старшее поколение", "Люди с ОВЗ"]
+        },
+        {
+          value: "c",
+          label: "Пока хочу более спокойные форматы без сильных потрясений",
+          categories: ["Образование", "Культура и искусство", "Другое"]
+        }
+      ]
+    },
+    {
+      id: 7,
+      type: "multi",
+      text: "В каких ролях вы чувствуете себя уверенно?",
+      note: "Можно выбрать несколько вариантов.",
+      options: [
+        {
+          value: "a",
+          label: "Организатор/координатор процессов и людей",
+          categories: ["Спорт и события", "Урбанистика", "Другое"]
+        },
+        {
+          value: "b",
+          label: "Наставник, преподаватель, тьютор",
+          categories: ["Образование", "Наставничество", "Дети и молодёжь"]
+        },
+        {
+          value: "c",
+          label: "Исследователь, аналитик, эксперт",
+          categories: ["Наука", "Интеллектуальная помощь"]
+        },
+        {
+          value: "d",
+          label: "Тихий помощник, который делает работу в тени",
+          categories: ["Животные", "Старшее поколение", "Здравоохранение и ЗОЖ"]
+        }
+      ]
+    },
+    {
+      id: 8,
+      type: "single",
+      text: "Насколько для вас важна работа именно с животными?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Это моя главная мотивация — хочу помогать животным",
+          categories: ["Животные"]
+        },
+        {
+          value: "b",
+          label: "Интересно, но не обязательно — готов(а) рассматривать разные сферы",
+          categories: ["Животные", "Экология"]
+        },
+        {
+          value: "c",
+          label: "С животными мне тяжело, лучше другой формат",
+          categories: ["Дети и молодёжь", "Образование", "Культура и искусство"]
+        }
+      ]
+    },
+    {
+      id: 9,
+      type: "single",
+      text: "Готовы ли вы принимать участие в проектах, связанных с памятью, историей, сложными темами?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Да, мне близка тема истории и памяти, готов(а) в это погружаться",
+          categories: ["Ветераны и историческая память", "Культура и искусство"]
+        },
+        {
+          value: "b",
+          label: "Скорее да, но в спокойном формате: выставки, мероприятия, просвещение",
+          categories: ["Культура и искусство", "Образование"]
+        },
+        {
+          value: "c",
+          label: "Пока нет, хочу более нейтральные и лёгкие темы",
+          categories: ["Экология", "Спорт и события", "Другое"]
+        }
+      ]
+    },
+    {
+      id: 10,
+      type: "multi",
+      text: "Какие навыки вы хотели бы развивать через волонтёрство?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Коммуникация и эмпатия",
+          categories: ["Дети и молодёжь", "Старшее поколение", "Люди с ОВЗ"]
+        },
+        {
+          value: "b",
+          label: "Организация мероприятий и управление проектами",
+          categories: ["Спорт и события", "Урбанистика", "ЧС"]
+        },
+        {
+          value: "c",
+          label: "Публичные выступления и преподавание",
+          categories: ["Образование", "Наставничество", "Наука"]
+        },
+        {
+          value: "d",
+          label: "Работа с данными, аналитика, IT-навыки",
+          categories: ["Интеллектуальная помощь", "Наука", "Другое"]
+        }
+      ]
+    },
+    {
+      id: 11,
+      type: "single",
+      text: "Готовы ли вы иногда включаться в помощь в форс-мажорных ситуациях (ЧС, эпидемии и т.п.)?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Да, меня мотивирует ощущение, что мой вклад важен здесь и сейчас",
+          categories: ["ЧС", "Коронавирус"]
+        },
+        {
+          value: "b",
+          label: "Скорее да, но не на передовой — могу помогать в тылу и онлайн",
+          categories: ["Коронавирус", "Интеллектуальная помощь"]
+        },
+        {
+          value: "c",
+          label: "Скорее нет, мне комфортнее в более стабильных проектах",
+          categories: ["Образование", "Экология", "Животные"]
+        }
+      ]
+    },
+    {
+      id: 12,
+      type: "multi",
+      text: "Что для вас важно получить от волонтёрства лично?",
+      note: "Можно выбрать несколько вариантов.",
+      options: [
+        {
+          value: "a",
+          label: "Чувство, что моя помощь ощутима и заметна",
+          categories: ["Поиск пропавших", "ЧС", "Здравоохранение и ЗОЖ"]
+        },
+        {
+          value: "b",
+          label: "Развитие профессиональных навыков и портфолио",
+          categories: ["Интеллектуальная помощь", "Наука", "Образование"]
+        },
+        {
+          value: "c",
+          label: "Новые знакомства и ощущение комьюнити",
+          categories: ["Спорт и события", "Культура и искусство", "Наставничество"]
+        },
+        {
+          value: "d",
+          label: "Тихую радость от того, что я делаю что-то хорошее, пусть и без фанфар",
+          categories: ["Животные", "Старшее поколение", "Другое"]
+        }
+      ]
+    }
+  ];
+
+  const STORAGE_KEY = "popit_quiz_state_v1";
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function clearState() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+  }
+
+  const state = {
+    currentIndex: 0,
+    answers: {},  // questionId -> array of values (даже для single)
+    ...loadState()
+  };
+
+  const questionBlock = document.getElementById("quizQuestionBlock");
+  const questionCounterEl = document.getElementById("quizQuestionCounter");
+  const progressFill = document.getElementById("quizProgressFill");
+  const errorEl = document.getElementById("quizError");
+  const prevBtn = document.getElementById("quizPrevBtn");
+  const nextBtn = document.getElementById("quizNextBtn");
+  const resetBtn = document.getElementById("quizResetBtn");
+  const resultsBox = document.getElementById("quizResults");
+  const resultsCatsBox = document.getElementById("quizResultsCats");
+
+  function renderQuestion() {
+    const q = QUIZ_QUESTIONS[state.currentIndex];
+    if (!q) return;
+
+    const total = QUIZ_QUESTIONS.length;
+    questionCounterEl.textContent = `Вопрос ${state.currentIndex + 1} из ${total}`;
+    progressFill.style.width = `${((state.currentIndex) / total) * 100}%`;
+
+    errorEl.textContent = "";
+
+    const savedValues = state.answers[q.id] || [];
+
+    let html = `<div class="quiz-question-text">${q.text}</div>`;
+    if (q.note) {
+      html += `<div class="quiz-question-note">${q.note}</div>`;
+    }
+
+    html += `<div class="quiz-options">`;
+    q.options.forEach((opt, idx) => {
+      const id = `q${q.id}_opt${idx}`;
+      const isSelected = savedValues.includes(opt.value);
+      const inputType = q.type === "multi" ? "checkbox" : "radio";
+      html += `
+        <label class="quiz-option ${isSelected ? "selected" : ""}" for="${id}">
+          <input
+            id="${id}"
+            type="${inputType}"
+            name="q${q.id}"
+            value="${opt.value}"
+            ${isSelected ? "checked" : ""}
+          />
+          <span>${opt.label}</span>
+        </label>
+      `;
+    });
+    html += `</div>`;
+
+    questionBlock.innerHTML = html;
+
+    // навешиваем обработчики
+    questionBlock.querySelectorAll(".quiz-option").forEach(label => {
+      const input = label.querySelector("input");
+      input.addEventListener("change", () => {
+        const current = state.answers[q.id] ? [...state.answers[q.id]] : [];
+        if (q.type === "single") {
+          state.answers[q.id] = [input.value];
+          // переснимаем selected
+          questionBlock.querySelectorAll(".quiz-option").forEach(l => l.classList.remove("selected"));
+          label.classList.add("selected");
+        } else {
+          if (input.checked) {
+            if (!current.includes(input.value)) current.push(input.value);
+          } else {
+            const idx = current.indexOf(input.value);
+            if (idx !== -1) current.splice(idx, 1);
+          }
+          state.answers[q.id] = current;
+          label.classList.toggle("selected", input.checked);
+        }
+        saveState(state);
+        errorEl.textContent = "";
+      });
+    });
+
+    prevBtn.disabled = state.currentIndex === 0;
+    nextBtn.textContent = state.currentIndex === total - 1 ? "Показать результат" : "Далее";
+
+    // если уже есть результат — показываем
+    if (state.results) {
+      showResults(state.results);
+    }
+  }
+
+  function validateCurrent() {
+    const q = QUIZ_QUESTIONS[state.currentIndex];
+    const ans = state.answers[q.id];
+    if (!ans || ans.length === 0) {
+      errorEl.textContent = "Пожалуйста, выберите хотя бы один вариант ответа.";
+      return false;
+    }
+    return true;
+  }
+
+  function computeResults() {
+    const scores = {};
+    VOL_CATEGORIES.forEach(cat => scores[cat] = 0);
+
+    QUIZ_QUESTIONS.forEach(q => {
+      const ansValues = state.answers[q.id] || [];
+      ansValues.forEach(val => {
+        const opt = q.options.find(o => o.value === val);
+        if (!opt) return;
+        const weight = q.type === "multi" ? 1 : 1.2;
+        (opt.categories || []).forEach(cat => {
+          if (!(cat in scores)) scores[cat] = 0;
+          scores[cat] += weight;
+        });
+      });
+    });
+
+    const sorted = Object.entries(scores)
+      .filter(([, score]) => score > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([cat, score]) => ({ category: cat, score }));
+
+    return sorted;
+  }
+
+  function showResults(results) {
+    if (!results || results.length === 0) {
+      resultsBox.style.display = "none";
+      return;
+    }
+    resultsCatsBox.innerHTML = "";
+    results.forEach(r => {
+      const pill = document.createElement("span");
+      pill.className = "results-cat-pill";
+      pill.textContent = r.category;
+      resultsCatsBox.appendChild(pill);
+    });
+    resultsBox.style.display = "block";
+  }
+
+  nextBtn.addEventListener("click", () => {
+    const total = QUIZ_QUESTIONS.length;
+    if (!validateCurrent()) return;
+
+    if (state.currentIndex < total - 1) {
+      state.currentIndex += 1;
+      saveState(state);
+      renderQuestion();
+    } else {
+      const results = computeResults();
+      state.results = results;
+      saveState(state);
+      progressFill.style.width = "100%";
+      showResults(results);
+      errorEl.textContent = "";
+    }
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (state.currentIndex === 0) return;
+    state.currentIndex -= 1;
+    saveState(state);
+    renderQuestion();
+  });
+
+  resetBtn.addEventListener("click", () => {
+    state.currentIndex = 0;
+    state.answers = {};
+    delete state.results;
+    clearState();
+    renderQuestion();
+    showResults(null);
+    progressFill.style.width = "0%";
+  });
+
+  document.getElementById("scrollToQuizBtn").addEventListener("click", () => {
+    document.getElementById("quiz").scrollIntoView({ behavior: "smooth" });
+  });
+
+  // инициализация
+  renderQuestion();
+  if (state.results) showResults(state.results);
+</script>
+</body>
+</html>
