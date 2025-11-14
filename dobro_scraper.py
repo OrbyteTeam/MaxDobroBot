@@ -15,8 +15,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://dobro.mail.ru/volunteers/"
-OUT_JSON = "events.json"
-LOG_FILE = "parser.log"
+OUT_JSON = "data/events.json"
+LOG_FILE = "data/parser.log"
 
 logging.basicConfig(
     level=logging.INFO,
