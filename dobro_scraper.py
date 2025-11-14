@@ -100,7 +100,7 @@ def click_show_more_until_end(drv):
             drv.execute_script(
                 "arguments[0].scrollIntoView({block:'center'});", btn
             )
-            time.sleep(0.2)
+            time.sleep(2.2)
             if not btn.is_enabled() or not btn.is_displayed():
                 log.info("Кнопка «Показать ещё» недоступна — конец ленты.")
                 break
@@ -189,7 +189,7 @@ def click_open_on_yandex_maps(drv) -> bool:
             drv.execute_script(
                 "arguments[0].scrollIntoView({block:'center'});", btn
             )
-            time.sleep(0.3)
+            time.sleep(1.3)
         except Exception:
             pass
 
@@ -199,7 +199,7 @@ def click_open_on_yandex_maps(drv) -> bool:
             drv.execute_script("arguments[0].click();", btn)
 
         log.info("Кликнул «Показать на карте». Жду появление оверлея…")
-        time.sleep(1.0)
+        time.sleep(2.0)
     except TimeoutException:
         log.error("Не нашёл элемент с текстом «Показать на карте».")
         return False
@@ -219,7 +219,7 @@ def click_open_on_yandex_maps(drv) -> bool:
             drv.execute_script(
                 "arguments[0].scrollIntoView({block:'center'});", ymaps_el
             )
-            time.sleep(0.3)
+            time.sleep(1.3)
         except Exception:
             pass
 
@@ -252,7 +252,7 @@ def try_get_city_from_yandex(drv) -> Optional[str]:
     if not click_open_on_yandex_maps(drv):
         return None
     for _ in range(20):
-        time.sleep(0.4)
+        time.sleep(1.4)
         if len(drv.window_handles) > len(handles_before):
             break
 
@@ -477,7 +477,7 @@ def expand_description(drv, timeout=6) -> bool:
                 ".EventInfo_event-description__text--hidden___lkKa"
             )) == 0
         )
-        time.sleep(0.2)
+        time.sleep(1.2)
         return True
     except Exception:
         return True
@@ -488,7 +488,7 @@ def parse_detail(drv, url: str) -> Dict:
     try:
         drv.get(url)
         wait_ready(drv, 45)
-        time.sleep(0.8)
+        time.sleep(1.8)
 
         if expand_description(drv):
             log.info("Описание раскрыто.")
