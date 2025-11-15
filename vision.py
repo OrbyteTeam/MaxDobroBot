@@ -25,7 +25,7 @@ class ClassifierLlm:
         *,
         credentials = API_KEY,
         is_corp = data["is_corp"],
-        model = "GigaChat-2-Pro",
+        model = "GigaChat-2-Max",
         verify_ssl_certs = False,
         request_timeout = 15,
         language: str = "ru",
@@ -46,7 +46,7 @@ class ClassifierLlm:
         self._classifier = GigaChat(
             credentials=API_KEY,
             scope="GIGACHAT_API_CORP" if is_corp else "GIGACHAT_API_PERS",
-            model=data["GigaChat_model"],
+            model="GigaChat-2-Max",
             verify_ssl_certs=verify_ssl_certs,
             profanity_check=False,
         )
@@ -74,19 +74,19 @@ class ClassifierLlm:
         raw_text = (choice.message.content or "").strip()
         data = json.loads(raw_text)
 
-        normalized = {
-            "is_volunteer_proof": bool(data.get("is_volunteer_proof", False)),
-            "confidence": float(data.get("confidence", 0.0)),
-            "hours": int(data.get("confidence", 0)),
-            "category": str(data.get("category", "other")),
-            "reasons": list(data.get("reasons", [])),
-            "missing_or_suspicious": list(data.get("missing_or_suspicious", [])),
-            "needs_clarification": list(data.get("needs_clarification", [])),
-        }
+        # normalized = {
+        #     "is_volunteer_proof": bool(data.get("is_volunteer_proof", False)),
+        #     "confidence": float(data.get("confidence", 0.0)),
+        #     "hours": int(data.get("confidence", 0)),
+        #     "category": str(data.get("category", "other")),
+        #     "reasons": list(data.get("reasons", [])),
+        #     "missing_or_suspicious": list(data.get("missing_or_suspicious", [])),
+        #     "needs_clarification": list(data.get("needs_clarification", [])),
+        # }
 
         return {
             "description": description,            # описание изображения
-            "classification": normalized,          # JSON-вердикт
+            "classification": data,          # JSON-вердикт
             "raw_model_text": raw_text             # сырой текст модели 
         }
 
@@ -195,5 +195,5 @@ class ClassifierLlm:
 
 if __name__=="__main__":
     clf = ClassifierLlm()
-    res = clf.check_doc("https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8PGAG26TyzPoCU7G2YRGRdtfamHaZdE6b7s-EmHsI5Ew")
+    res = clf.check_doc("https://i.oneme.ru/i?r=BTGBPUwtwgYUeoFhO7rESmr8WMFatQUPBJ8yI289t4rcZdfamHaZdE6b7s-EmHsI5Ew")
     print(res)
