@@ -164,21 +164,7 @@ async def on_message(message: aiomax.Message, cursor: fsm.FSMCursor):
             logging.exception("Ошибка при обработке вложения")
             await message.reply("❌ Не удалось сохранить файл.")
         return
-
-
-    if text.strip() == "/upload":
-        upload_url = f"http://192.168.1.137:8080/?user_id={user_id}"
-        kb = aiomax.buttons.KeyboardBuilder()
-        kb.add(aiomax.buttons.LinkButton("Открыть ссылку мини-апп", upload_url))
-        kb.add(aiomax.buttons.WebAppButton("Открыть мини-апп", "t268_hakaton_bot"))
-
-        await message.send(
-            f"Загрузите файл через mini-app", keyboard=kb
-         
-        )
-        return
         
-
 
     print("----------------")
     print(message.sender.user_id, message.sender.first_name, message.sender.last_name)
