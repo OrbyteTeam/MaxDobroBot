@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>DobroBot Popit — подберём волонтёрство под тебя</title>
+  <title>DobroBot Bona — подберём волонтёрство под тебя</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description"
-        content="DobroBot Popit помогает подобрать удобные волонтёрские мероприятия и места для пожертвований, а на этом сайте можно пройти тест и узнать, какой тип волонтёрства подходит именно вам." />
+        content="DobroBot Bona помогает подобрать удобные волонтёрские мероприятия и места для пожертвований, а на этом сайте можно пройти тест и узнать, какой тип волонтёрства подходит именно вам." />
 
   <style>
     :root {
@@ -528,10 +528,10 @@
 
   <section class="hero">
     <div>
-      <h1 class="hero-title">DobroBot Popit</h1>
+      <h1 class="hero-title">DobroBot Bona</h1>
       <p class="hero-subtitle">
-        Добрый кролик Попит помогает подобрать волонтёрские мероприятия и места для пожертвований,
-        а ещё — пройти тест и понять, какой тип волонтёрства подойдёт именно вам.
+        Добрый кролик Бона помогает подобрать волонтёрские мероприятия и места для пожертвований,
+        а ещё — пройти тест и понять, какой тип волонтёрства подойдёт именно Вам.
       </p>
 
       <div class="hero-badges">
@@ -556,13 +556,13 @@
       </p>
     </div>
 
-    <aside class="hero-mascot-card" aria-label="Маскот ДоброБота Попита">
+    <aside class="hero-mascot-card" aria-label="Маскот ДоброБота Боны">
       <div class="hero-mascot-img">
-        <img src="miniapp_data/mascot.png" alt="Кролик ДоброBot Popit с коробкой для пожертвований" />
+        <img src="miniapp_data/mascot.png" alt="Кролик ДоброBot Bona с коробкой для пожертвований" />
       </div>
       <div class="hero-mascot-caption">
-        Попит знает, что начинать волонтёрить немного страшно. Поэтому он аккуратно подбирает
-        форматы, где будет комфортно именно вам.
+        Бона знает, что начинать волонтёрить немного страшно. Поэтому она аккуратно подбирает
+        форматы, где будет комфортно именно Вам.
       </div>
     </aside>
   </section>
@@ -570,7 +570,7 @@
   <!-- ABOUT BOT -->
 
   <section id="about">
-    <h2 class="section-title">Что умеет DobroBot Popit</h2>
+    <h2 class="section-title">Что умеет DobroBot Bona</h2>
     <p class="section-subtitle">
       Бот живёт в мессенджере Max и собирает волонтёрские возможности из разных источников. Он
       не заменяет официальные сервисы, а помогает в них сориентироваться.
@@ -608,8 +608,8 @@
   <section id="matching">
     <h2 class="section-title">Подбор волонтёрства по темам</h2>
     <p class="section-subtitle">
-      В боте Попит ориентируется на те же направления, что и крупные волонтёрские платформы. После
-      прохождения теста он подскажет, с какими сферами вам, скорее всего, будет комфортнее всего работать.
+      В боте Бона ориентируется на те же направления, что и крупные волонтёрские платформы. После
+      прохождения теста она подскажет, с какими сферами Вам, скорее всего, будет комфортнее всего работать.
     </p>
 
     <div class="card-row" style="margin-bottom: 18px;">
@@ -726,6 +726,8 @@
 
   <!-- QUIZ -->
 
+    <!-- QUIZ -->
+
   <section id="quiz">
     <h2 class="section-title">Тест: какой тип волонтёрства вам подходит</h2>
     <p class="section-subtitle">
@@ -734,12 +736,10 @@
     </p>
 
     <div class="quiz-wrapper">
-      <div>
+      <!-- Левая колонка с вопросами -->
+      <div id="quizMainPane">
         <div class="quiz-progress-row">
-          <span id="quizQuestionCounter">Вопрос 1 из 12</span>
-          <button class="btn btn-ghost" id="quizResetBtn" type="button" style="padding:6px 12px;font-size:12px;">
-            Начать заново
-          </button>
+          <span id="quizQuestionCounter">Вопрос 1 из 6</span>
         </div>
         <div class="quiz-progress-bar">
           <div class="quiz-progress-fill" id="quizProgressFill"></div>
@@ -757,10 +757,11 @@
         </div>
       </div>
 
+      <!-- Правая колонка: пояснение и результаты -->
       <aside class="quiz-meta">
         <strong>Как работает тест</strong>
         <ul>
-          <li>12 вопросов, часть с одним вариантом ответа, часть — с несколькими.</li>
+          <li>6 вопросов, часть с одним вариантом ответа, часть — с несколькими.</li>
           <li>Ответы связаны с направлениями волонтёрства: животные, экология, дети, образование и другие.</li>
           <li>В конце вы увидите 3–4 направления, которые сейчас подходят вам больше всего.</li>
         </ul>
@@ -779,10 +780,15 @@
             </p>
             <p style="margin:4px 0;">
               ➜ Открыть бота в Max:
-              <a href="https://max.ru/t268_hakaton_bot" target="_blank" rel="noopener">DobroBot Popit</a>
+              <a href="https://max.ru/t268_hakaton_bot" target="_blank" rel="noopener">DobroBot Bona</a> <!-- TODO -->
             </p>
             <p style="margin:4px 0;">
               ➜ Ещё больше мероприятий и проектов — на <a href="https://dobro.ru" target="_blank" rel="noopener">dobro.ru</a>.
+            </p>
+            <p style="margin:8px 0 0;">
+              <button class="btn btn-primary" id="quizRestartFromResults" type="button" style="padding:10px 16px;font-size:13px;">
+                Пройти тест заново
+              </button>
             </p>
           </div>
         </div>
@@ -790,12 +796,13 @@
     </div>
   </section>
 
+
   <!-- CONTACTS -->
 
   <section id="contacts">
     <h2 class="section-title">Контакты и команда</h2>
     <p class="section-subtitle">
-      DobroBot Popit — это учебно-просветительский проект при участии VK Education. Бот и
+      DobroBot Bona — это учебно-просветительский проект при участии VK Education. Бот и
       мини-приложение развиваются вместе с волонтёрами и наставниками.
     </p>
 
@@ -806,7 +813,7 @@
       </p>
       <ul>
         <li>E-mail: <a href="mailto:Estnafinema0@gmail.com">Estnafinema0@gmail.com</a></li>
-        <li>Бот в Max: <a href="https://max.ru/t268_hakaton_bot" target="_blank" rel="noopener">DobroBot Popit</a></li>
+        <li>Бот в Max: <a href="https://max.ru/t268_hakaton_bot" target="_blank" rel="noopener">DobroBot Bona</a></li>
       </ul>
       <p style="margin-top:8px;">
         Мы будем рады, если вы поделитесь этим тестом с друзьями, которым тоже хочется помогать,
@@ -816,11 +823,10 @@
   </section>
 
   <footer>
-    DobroBot Popit · VK Education ·
+    DobroBot Bona · VK Education ·
     <span>Сделано с заботой о тех, кто помогает другим.</span>
   </footer>
 </div>
-
 <script>
   // ---- Конфигурация теста ----
 
@@ -847,6 +853,7 @@
     "СВО"
   ];
 
+  // 6 вопросов, смешанный формат
   const QUIZ_QUESTIONS = [
     {
       id: 1,
@@ -861,18 +868,18 @@
         },
         {
           value: "b",
-          label: "Со взрослыми, которым нужна интеллектуальная или юридическая помощь",
-          categories: ["Интеллектуальная помощь", "Права человека", "Наука"]
-        },
-        {
-          value: "c",
           label: "С пожилыми людьми",
           categories: ["Старшее поколение"]
         },
         {
-          value: "d",
+          value: "c",
           label: "С животными",
           categories: ["Животные"]
+        },
+        {
+          value: "d",
+          label: "Со взрослыми, которым нужна интеллектуальная или юридическая помощь",
+          categories: ["Интеллектуальная помощь", "Права человека", "Наука"]
         },
         {
           value: "e",
@@ -944,6 +951,29 @@
     },
     {
       id: 4,
+      type: "single",
+      text: "Насколько вам комфортно оказываться в эмоционально тяжёлых ситуациях?",
+      note: "",
+      options: [
+        {
+          value: "a",
+          label: "Готов(а) к этому, если есть поддержка команды",
+          categories: ["ЧС", "Поиск пропавших", "Здравоохранение и ЗОЖ"]
+        },
+        {
+          value: "b",
+          label: "Готов(а) к средней эмоциональной нагрузке",
+          categories: ["Животные", "Старшее поколение", "Люди с ОВЗ"]
+        },
+        {
+          value: "c",
+          label: "Пока хочу более спокойные форматы без сильных потрясений",
+          categories: ["Образование", "Культура и искусство", "Другое"]
+        }
+      ]
+    },
+    {
+      id: 5,
       type: "multi",
       text: "Какие темы вам ближе всего по личным ценностям?",
       note: "Можно выбрать несколько вариантов.",
@@ -976,178 +1006,7 @@
       ]
     },
     {
-      id: 5,
-      type: "single",
-      text: "Как вы относитесь к физической активности во время волонтёрства?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Хочу двигаться: уборки, спортивные события, выезды — это моё",
-          categories: ["Спорт и события", "Экология"]
-        },
-        {
-          value: "b",
-          label: "Умеренная активность, но без тяжёлых нагрузок",
-          categories: ["Дети и молодёжь", "Культура и искусство"]
-        },
-        {
-          value: "c",
-          label: "Предпочитаю спокойные форматы — онлайн или кабинетную работу",
-          categories: ["Интеллектуальная помощь", "Наука"]
-        }
-      ]
-    },
-    {
       id: 6,
-      type: "single",
-      text: "Насколько вам комфортно оказываться в эмоционально тяжёлых ситуациях?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Готов(а) к этому, если есть поддержка команды",
-          categories: ["ЧС", "Поиск пропавших", "Здравоохранение и ЗОЖ"]
-        },
-        {
-          value: "b",
-          label: "Готов(а) к средней эмоциональной нагрузке",
-          categories: ["Животные", "Старшее поколение", "Люди с ОВЗ"]
-        },
-        {
-          value: "c",
-          label: "Пока хочу более спокойные форматы без сильных потрясений",
-          categories: ["Образование", "Культура и искусство", "Другое"]
-        }
-      ]
-    },
-    {
-      id: 7,
-      type: "multi",
-      text: "В каких ролях вы чувствуете себя уверенно?",
-      note: "Можно выбрать несколько вариантов.",
-      options: [
-        {
-          value: "a",
-          label: "Организатор/координатор процессов и людей",
-          categories: ["Спорт и события", "Урбанистика", "Другое"]
-        },
-        {
-          value: "b",
-          label: "Наставник, преподаватель, тьютор",
-          categories: ["Образование", "Наставничество", "Дети и молодёжь"]
-        },
-        {
-          value: "c",
-          label: "Исследователь, аналитик, эксперт",
-          categories: ["Наука", "Интеллектуальная помощь"]
-        },
-        {
-          value: "d",
-          label: "Тихий помощник, который делает работу в тени",
-          categories: ["Животные", "Старшее поколение", "Здравоохранение и ЗОЖ"]
-        }
-      ]
-    },
-    {
-      id: 8,
-      type: "single",
-      text: "Насколько для вас важна работа именно с животными?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Это моя главная мотивация — хочу помогать животным",
-          categories: ["Животные"]
-        },
-        {
-          value: "b",
-          label: "Интересно, но не обязательно — готов(а) рассматривать разные сферы",
-          categories: ["Животные", "Экология"]
-        },
-        {
-          value: "c",
-          label: "С животными мне тяжело, лучше другой формат",
-          categories: ["Дети и молодёжь", "Образование", "Культура и искусство"]
-        }
-      ]
-    },
-    {
-      id: 9,
-      type: "single",
-      text: "Готовы ли вы принимать участие в проектах, связанных с памятью, историей, сложными темами?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Да, мне близка тема истории и памяти, готов(а) в это погружаться",
-          categories: ["Ветераны и историческая память", "Культура и искусство"]
-        },
-        {
-          value: "b",
-          label: "Скорее да, но в спокойном формате: выставки, мероприятия, просвещение",
-          categories: ["Культура и искусство", "Образование"]
-        },
-        {
-          value: "c",
-          label: "Пока нет, хочу более нейтральные и лёгкие темы",
-          categories: ["Экология", "Спорт и события", "Другое"]
-        }
-      ]
-    },
-    {
-      id: 10,
-      type: "multi",
-      text: "Какие навыки вы хотели бы развивать через волонтёрство?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Коммуникация и эмпатия",
-          categories: ["Дети и молодёжь", "Старшее поколение", "Люди с ОВЗ"]
-        },
-        {
-          value: "b",
-          label: "Организация мероприятий и управление проектами",
-          categories: ["Спорт и события", "Урбанистика", "ЧС"]
-        },
-        {
-          value: "c",
-          label: "Публичные выступления и преподавание",
-          categories: ["Образование", "Наставничество", "Наука"]
-        },
-        {
-          value: "d",
-          label: "Работа с данными, аналитика, IT-навыки",
-          categories: ["Интеллектуальная помощь", "Наука", "Другое"]
-        }
-      ]
-    },
-    {
-      id: 11,
-      type: "single",
-      text: "Готовы ли вы иногда включаться в помощь в форс-мажорных ситуациях (ЧС, эпидемии и т.п.)?",
-      note: "",
-      options: [
-        {
-          value: "a",
-          label: "Да, меня мотивирует ощущение, что мой вклад важен здесь и сейчас",
-          categories: ["ЧС", "Коронавирус"]
-        },
-        {
-          value: "b",
-          label: "Скорее да, но не на передовой — могу помогать в тылу и онлайн",
-          categories: ["Коронавирус", "Интеллектуальная помощь"]
-        },
-        {
-          value: "c",
-          label: "Скорее нет, мне комфортнее в более стабильных проектах",
-          categories: ["Образование", "Экология", "Животные"]
-        }
-      ]
-    },
-    {
-      id: 12,
       type: "multi",
       text: "Что для вас важно получить от волонтёрства лично?",
       note: "Можно выбрать несколько вариантов.",
@@ -1176,7 +1035,7 @@
     }
   ];
 
-  const STORAGE_KEY = "popit_quiz_state_v1";
+  const STORAGE_KEY = "Bona_quiz_state_v2";
 
   function loadState() {
     try {
@@ -1191,9 +1050,7 @@
   function saveState(state) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   }
 
   function clearState() {
@@ -1202,10 +1059,12 @@
     } catch (e) {}
   }
 
+  const savedState = loadState() || {};
   const state = {
     currentIndex: 0,
-    answers: {},  // questionId -> array of values (даже для single)
-    ...loadState()
+    answers: {},
+    results: null,
+    ...savedState
   };
 
   const questionBlock = document.getElementById("quizQuestionBlock");
@@ -1214,9 +1073,10 @@
   const errorEl = document.getElementById("quizError");
   const prevBtn = document.getElementById("quizPrevBtn");
   const nextBtn = document.getElementById("quizNextBtn");
-  const resetBtn = document.getElementById("quizResetBtn");
+  const mainPane = document.getElementById("quizMainPane");
   const resultsBox = document.getElementById("quizResults");
   const resultsCatsBox = document.getElementById("quizResultsCats");
+  const restartFromResultsBtn = document.getElementById("quizRestartFromResults");
 
   function renderQuestion() {
     const q = QUIZ_QUESTIONS[state.currentIndex];
@@ -1224,8 +1084,7 @@
 
     const total = QUIZ_QUESTIONS.length;
     questionCounterEl.textContent = `Вопрос ${state.currentIndex + 1} из ${total}`;
-    progressFill.style.width = `${((state.currentIndex) / total) * 100}%`;
-
+    progressFill.style.width = `${(state.currentIndex / total) * 100}%`;
     errorEl.textContent = "";
 
     const savedValues = state.answers[q.id] || [];
@@ -1257,22 +1116,20 @@
 
     questionBlock.innerHTML = html;
 
-    // навешиваем обработчики
     questionBlock.querySelectorAll(".quiz-option").forEach(label => {
       const input = label.querySelector("input");
       input.addEventListener("change", () => {
-        const current = state.answers[q.id] ? [...state.answers[q.id]] : [];
+        const q = QUIZ_QUESTIONS[state.currentIndex];
+        let current = state.answers[q.id] ? [...state.answers[q.id]] : [];
         if (q.type === "single") {
           state.answers[q.id] = [input.value];
-          // переснимаем selected
           questionBlock.querySelectorAll(".quiz-option").forEach(l => l.classList.remove("selected"));
           label.classList.add("selected");
         } else {
           if (input.checked) {
             if (!current.includes(input.value)) current.push(input.value);
           } else {
-            const idx = current.indexOf(input.value);
-            if (idx !== -1) current.splice(idx, 1);
+            current = current.filter(v => v !== input.value);
           }
           state.answers[q.id] = current;
           label.classList.toggle("selected", input.checked);
@@ -1284,11 +1141,6 @@
 
     prevBtn.disabled = state.currentIndex === 0;
     nextBtn.textContent = state.currentIndex === total - 1 ? "Показать результат" : "Далее";
-
-    // если уже есть результат — показываем
-    if (state.results) {
-      showResults(state.results);
-    }
   }
 
   function validateCurrent() {
@@ -1303,7 +1155,7 @@
 
   function computeResults() {
     const scores = {};
-    VOL_CATEGORIES.forEach(cat => scores[cat] = 0);
+    VOL_CATEGORIES.forEach(cat => (scores[cat] = 0));
 
     QUIZ_QUESTIONS.forEach(q => {
       const ansValues = state.answers[q.id] || [];
@@ -1322,7 +1174,7 @@
       .filter(([, score]) => score > 0)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
-      .map(([cat, score]) => ({ category: cat, score }));
+      .map(([category, score]) => ({ category, score }));
 
     return sorted;
   }
@@ -1342,6 +1194,18 @@
     resultsBox.style.display = "block";
   }
 
+  function hideQuestionsShowResults() {
+    mainPane.style.display = "none";
+    showResults(state.results);
+    progressFill.style.width = "100%";
+    questionCounterEl.textContent = "Тест пройден";
+  }
+
+  function showQuestionsHideResults() {
+    mainPane.style.display = "block";
+    resultsBox.style.display = "none";
+  }
+
   nextBtn.addEventListener("click", () => {
     const total = QUIZ_QUESTIONS.length;
     if (!validateCurrent()) return;
@@ -1354,9 +1218,7 @@
       const results = computeResults();
       state.results = results;
       saveState(state);
-      progressFill.style.width = "100%";
-      showResults(results);
-      errorEl.textContent = "";
+      hideQuestionsShowResults();
     }
   });
 
@@ -1367,23 +1229,32 @@
     renderQuestion();
   });
 
-  resetBtn.addEventListener("click", () => {
+  restartFromResultsBtn.addEventListener("click", () => {
     state.currentIndex = 0;
     state.answers = {};
-    delete state.results;
+    state.results = null;
     clearState();
-    renderQuestion();
-    showResults(null);
+    showQuestionsHideResults();
     progressFill.style.width = "0%";
+    renderQuestion();
   });
 
-  document.getElementById("scrollToQuizBtn").addEventListener("click", () => {
-    document.getElementById("quiz").scrollIntoView({ behavior: "smooth" });
-  });
+  // Скролл к тесту из кнопки в hero
+  const scrollToQuizBtn = document.getElementById("scrollToQuizBtn");
+  if (scrollToQuizBtn) {
+    scrollToQuizBtn.addEventListener("click", () => {
+      document.getElementById("quiz").scrollIntoView({ behavior: "smooth" });
+    });
+  }
 
-  // инициализация
-  renderQuestion();
-  if (state.results) showResults(state.results);
+  // Инициализация
+  if (state.results) {
+    hideQuestionsShowResults();
+  } else {
+    showQuestionsHideResults();
+    renderQuestion();
+  }
 </script>
+
 </body>
 </html>
