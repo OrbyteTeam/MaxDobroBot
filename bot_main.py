@@ -106,9 +106,9 @@ async def on_start(pd: aiomax.BotStartPayload):
         "Напиши, например: «завтра в Москве после 15:00»."
         )
     await pd.send(
-        "Или просто отправь мне картинкой/документом своё доброе достижение и я засчитаю тебе волонтёрские часы\n"
+        "Или просто отправь мне картинкой/документом своё доброе достижение и я засчитаю тебе это в рейтинг!\n"
         "Команда /files позволит просмотреть загруженные достижения\n"
-        "Команда /score - узнать своё количество волонтерских часов"
+        "Команда /score - узнать своё количество очков"
         )
 
 
@@ -154,11 +154,11 @@ async def on_message(message: aiomax.Message, cursor: fsm.FSMCursor):
                 
                 if info["classification"]['is_volunteer_proof'] == True:
                     uploaded_files.append(file_url)
-                    score += info["classification"]["hours"]
+                    score += (1+info["classification"]["hours"])
                     cursor.change_data({"uploaded_files": uploaded_files,"score": score})
-                    await message.reply(f"✅ Документ успешно сохранён в вашем профиле!\nНачислено волонтерских часов: {info["classification"]["hours"]}\nТеперь у вас всего часов: {score}", attachments=doc)
+                    await message.reply(f"✅ Документ успешно сохранён в вашем профиле!\nНачислено очков: {info["classification"]["hours"]}\nТеперь у вас всего очков: {score}", attachments=doc)
                 else:
-                    await message.reply(f"❌ Документ не прошел проверку!\nПричина: {' '.join(info["classification"]["reasons"])}\nВолонтерских часов: {score}", attachments=doc)
+                    await message.reply(f"❌ Документ не прошел проверку!\nПричина: {' '.join(info["classification"]["reasons"])}\nВолонтерских очков: {score}", attachments=doc)
 
         except Exception as e:
             logging.exception("Ошибка при обработке вложения")
