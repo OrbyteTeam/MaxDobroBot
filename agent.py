@@ -101,9 +101,12 @@ class Agent:
 
             model = LLM_Parser()
             parsed = model.generate(user_text)
-            parsed = json.loads(parsed)
-            print(f'PARSED: {parsed}')
-            city, date, time_ = parsed["city"], parsed["date"], parsed["time_start"]
+            try:
+                parsed = json.loads(parsed)
+                print(f'PARSED: {parsed}')
+                city, date, time_ = parsed["city"], parsed["date"], parsed["time_start"]
+            except:
+                city, date, time_ = "null", "null", "null"
 
             results = self.search_events_from_json(
                 city=city,
@@ -186,7 +189,7 @@ class Agent:
         """
         user_start, user_end, gran = Agent._compute_search_range(date, time_start, time_window_minutes)
         if not user_start or not user_end:
-            return "Не удалось распознать дату. Уточните день/месяц/год, пожалуйста."
+            return "Не удалось распознать дату, возможно ваш запрос связан с чувствительными темами, на которые я не могу отвечать. Если вы уверены в корректности, уточните день/месяц/год, пожалуйста."
 
         with open(self.data_path_, "r", encoding="utf-8") as f:
             dataset = json.load(f)
@@ -225,7 +228,7 @@ class Agent:
             date_line = f"{ev_date.strftime('%d.%m.%Y')} {ev_ts.strftime('%H:%M')}-{ev_te.strftime('%H:%M')}"
             address = loc.get("address_full") or "Адрес не указан"
             org_name = org.get("name") or "Организатор не указан"
-            content = f"{date_line} • {address} • {org_name}"
+            content = f"{date_line} || {address} || {org_name}"
 
             results.append({
                 "title": _safe_text(ev.get("title") or "Без названия"),
@@ -237,7 +240,8 @@ class Agent:
             pref = LLM_Filter("cfg_filter.json")
             filtered = []
             for r in results:
-                cand_text = f"{r['title']} — {r['content']}"
+                description = r.get("description") or r.get("title") 
+                cand_text = f"{description} — {r['content']}"
                 if r.get("url"):
                     cand_text += f"\n{r['url']}"
                 verdict = pref.judge(user_text=user_text, event_text=cand_text)
@@ -250,7 +254,7 @@ class Agent:
             results = results[:max_results]
 
         if not results:
-            return "К сожалению, таких мероприятий нет. Может поищем что-нибудь другое?"
+            return "К сожалению, таких мероприятий нет. Может поищем что-нибудь другое? Без указаний точной даты я смотрю только на сегоднящнее число."
 
         lines = []
         for r in results:
@@ -285,7 +289,10 @@ class Agent:
                 dt = dateparser.parse(date_str, languages=["ru"])
                 if not dt:
                     return None, None, None
-                from datetime import time as dtime
+                if not time_start:
+                    start = datetime(year, mon, day, 0, 0)
+                    end = datetime(year, mon, day, 23, 59)
+                    return start, end, "day"
                 t = Agent._parse_hhmm(time_start) or dtime(12, 0)
                 user_start = datetime.combine(dt.date(), t) - timedelta(minutes=time_window_minutes)
                 user_end = datetime.combine(dt.date(), t) + timedelta(minutes=time_window_minutes)
@@ -311,6 +318,13 @@ class Agent:
 
         mon = int(mon_s); day = int(day_s)
         from datetime import time as dtime
+
+        if not time_start:
+            start = datetime(year, mon, day, 0, 0)
+            end = datetime(year, mon, day, 23, 59)
+            return start, end, "day"
+
+
         t = Agent._parse_hhmm(time_start) or dtime(12, 0)
         user_center = datetime(year, mon, day, t.hour, t.minute)
         user_start = user_center - timedelta(minutes=time_window_minutes)
@@ -373,7 +387,7 @@ class LLM_Parser:
 
         data = {
             "model": self.model_,
-            "profanity_check": True,
+            "profanity_check": False,
             "messages": messages,
         }
         response = requests.request("POST",
@@ -391,7 +405,7 @@ class LLM_Parser:
         try:
             messages_for_api = [{"role": "system", "content": self.system_prompt}]
             current_date = datetime.now().strftime("%Y-%m-%d")
-            message_with_date = f"{message}\n\nТекущая дата: {current_date}"
+            message_with_date = f"Текущая дата: {current_date}\n\nНеобходимо распарсить:{message}"
             messages_for_api.append({"role": "user", "content": message_with_date})
             response = self.send_request(messages_for_api)
             return response
@@ -400,41 +414,6 @@ class LLM_Parser:
 
 
 
-if __name__ == "__main__":
-    from uuid import uuid4
-    from langchain_core.messages import HumanMessage
-
-    agent = Agent()
-    thread_id = f"cli-{uuid4().hex[:6]}"
-    config = {"configurable": {"thread_id": thread_id}}
-
-    print("Готово. Пиши сообщение. Команды: /exit (выход), /reset (сброс памяти).")
-    print(f"(thread_id: {thread_id})")
-
-    while True:
-        try:
-            user = input("Саша: ").strip()
-        except (KeyboardInterrupt, EOFError):
-            print("\nВыход.")
-            break
-
-        if not user:
-            continue
-        if user.lower() in ("/exit", "/quit"):
-            print("Выход.")
-            break
-        if user.lower().startswith("/reset"):
-            thread_id = f"cli-{uuid4().hex[:6]}"
-            config = {"configurable": {"thread_id": thread_id}}
-            print(f"Память сброшена. Новый thread_id: {thread_id}")
-            continue
-
-        try:
-            state = agent.agent_.invoke({"messages": [HumanMessage(content=user)]}, config)
-            _safe_print("Бот:", state["messages"][-1].content)
-
-        except Exception as e:
-            print(f"Ошибка ответа: {e}")
 
 class LLM_Filter:
     def __init__(self, cfg_file="cfg_filter.json"):
@@ -489,3 +468,39 @@ class LLM_Filter:
         except Exception:
             out = "1"
         return out
+
+if __name__ == "__main__":
+    from uuid import uuid4
+    from langchain_core.messages import HumanMessage
+
+    agent = Agent()
+    thread_id = f"cli-{uuid4().hex[:6]}"
+    config = {"configurable": {"thread_id": thread_id}}
+
+    print("Готово. Пиши сообщение. Команды: /exit (выход), /reset (сброс памяти).")
+    print(f"(thread_id: {thread_id})")
+
+    while True:
+        try:
+            user = input("Саша: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\nВыход.")
+            break
+
+        if not user:
+            continue
+        if user.lower() in ("/exit", "/quit"):
+            print("Выход.")
+            break
+        if user.lower().startswith("/reset"):
+            thread_id = f"cli-{uuid4().hex[:6]}"
+            config = {"configurable": {"thread_id": thread_id}}
+            print(f"Память сброшена. Новый thread_id: {thread_id}")
+            continue
+
+        try:
+            state = agent.agent_.invoke({"messages": [HumanMessage(content=user)]}, config)
+            _safe_print("Бот:", state["messages"][-1].content)
+
+        except Exception as e:
+            print(f"Ошибка ответа: {e}")
