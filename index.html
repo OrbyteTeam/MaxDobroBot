@@ -11,7 +11,9 @@
     :root {
       --bg: #f7f1e8;
       --bg-card: #ffffff;
-      --accent: #5a48ff;  
+  --accent: #5a48ff;
+      /*--accent: hsl(215,48.2%,48.4%);*/
+
       --accent-soft: #e3ddff;
       --vk-blue: #0077ff;
       --text-main: #271b15;
@@ -433,6 +435,25 @@
       margin: 6px 0;
     }
 
+
+    .hero-highlight {
+      font-size: 13px;
+      padding: 9px 13px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-soft-strong);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .hero-highlight span {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    
     /* RESULTS */
 
     .results-card {
@@ -556,7 +577,13 @@
         Подборки мероприятий и мест для пожертвований живут внутри бота. Сайт — это точка входа и
         тест, который помогает сделать первый шаг.
       </p>
+                    <div class="hero-highlight">
+            <strong>Бона</strong>
+            <span>от лат. bona — «добро», «благо»</span>
+          </div>
+
     </div>
+
 
     <aside class="hero-mascot-card" aria-label="Маскот ДоброБота Боны">
       <div class="hero-mascot-img">
