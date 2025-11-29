@@ -95,7 +95,8 @@ async def on_start(pd: aiomax.BotStartPayload):
         logging.exception("bot.get_me() failed")
     kb = aiomax.buttons.KeyboardBuilder()
     kb.add(aiomax.buttons.LinkButton("Бона", "https://orbyteteam.github.io/MaxDobroBot/"))
-    doc = aiomax.PhotoAttachment(token="sqGTeRV14KQuM6+bOFPy5imUFlCMQSn3SOtmVLPUH2NJrjQATL5s543vt0ATx4fzV+zyaeNg9TA0izvwSne/irZfcCHl5ssH")
+    # doc = aiomax.PhotoAttachment(token="sqGTeRV14KQuM6+bOFPy5imUFlCMQSn3SOtmVLPUH2NJrjQATL5s543vt0ATx4fzV+zyaeNg9TA0izvwSne/irZfcCHl5ssH")
+    doc = aiomax.PhotoAttachment(token="yQ7+Q/03MaryRtGk7Sue4vTy08tY2WcclHXBKYpkTYeLBIt3u4HH2pPuC5qA1mRTlmAOPrayHHjG/0R97kXXnx1M5JtVpc8I")
     await pd.send("Привет! Меня зовут Бона 😊.\nЯ твой персональный помощник в мире волонтерства.\n", attachments=doc, keyboard=kb)
     await pd.send(
         "Могу:\n"
